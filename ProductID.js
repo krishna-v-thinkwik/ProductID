@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -10,11 +10,24 @@ app.use(express.json());
 function getMatchedProductIds(orderString, productsData) {
     const products = productsData.products;
     const productMap = new Map(products.map(product => [product.name.trim().toLowerCase(), product._id]));
-    const orderItems = orderString.toLowerCase().split(/\band\b|,/).map(item => item.trim());
-    const matchedProductIds = orderItems.map(item => productMap.get(item)).filter(id => id !== undefined);
-    
+
+    // Extract order items and remove numbers
+    const orderItems = orderString.toLowerCase()
+        .split(/\band\b|,/)  // Split by 'and' or ','
+        .map(item => item.trim().replace(/^\d+\s*/, ''));  // Remove leading numbers
+
+    console.log("Order Items After Cleaning:", orderItems); // Debugging
+
+    // Match products
+    const matchedProductIds = orderItems
+        .map(item => productMap.get(item))
+        .filter(id => id !== undefined);
+
+    console.log("Matched Product IDs:", matchedProductIds); // Debugging
+
     return matchedProductIds;
 }
+
 
 app.post("/match-products", (req, res) => {
     const { orderString, productsData } = req.body;
