@@ -11,9 +11,13 @@ function getMatchedProductIds(orderString, productsData) {
     const products = productsData.products;
     const productMap = new Map(products.map(product => [product.name.trim().toLowerCase(), product._id]));
 
+    // Replace commas with 'and' ensuring proper formatting
+    const cleanedOrderString = orderString.replace(/,\s?(?!and)/g, " and ");
+    console.log("Cleaned Order String:", cleanedOrderString); // Debugging
+
     // Extract order items and remove numbers
-    const orderItems = orderString.toLowerCase()
-        .split(/\band\b|,/)  // Split by 'and' or ','
+    const orderItems = cleanedOrderString.toLowerCase()
+        .split(/\band\b/)  // Split by 'and'
         .map(item => item.trim().replace(/^\d+\s*/, ''));  // Remove leading numbers
 
     console.log("Order Items After Cleaning:", orderItems); // Debugging
@@ -27,7 +31,6 @@ function getMatchedProductIds(orderString, productsData) {
 
     return matchedProductIds;
 }
-
 
 app.post("/match-products", (req, res) => {
     const { orderString, productsData } = req.body;
