@@ -17,20 +17,28 @@ function getMatchedProductIds(orderString, productsData) {
 
     // Extract order items and remove numbers
     const orderItems = cleanedOrderString.toLowerCase()
-        .split(/\band\b/)  // Split by 'and'
-        .map(item => item.trim().replace(/^\d+\s*/, ''));  // Remove leading numbers
+        .split(/\band\b/)
+        .map(item => item.trim().replace(/^\d+\s*/, '')); // Remove leading numbers
 
     console.log("Order Items After Cleaning:", orderItems); // Debugging
 
-    // Match products
-    const matchedProductIds = orderItems
-        .map(item => productMap.get(item))
-        .filter(id => id !== undefined);
+    // Match products with basic plural handling
+    const matchedProductIds = orderItems.map(item => {
+        let productId = productMap.get(item);
+        if (!productId) {
+            // Try removing trailing 's' if it's plural
+            const singularItem = item.endsWith('s') ? item.slice(0, -1).trim() : item;
+            productId = productMap.get(singularItem);
+        }
+        return productId;
+    }).filter(id => id !== undefined);
 
     console.log("Matched Product IDs:", matchedProductIds); // Debugging
 
     return matchedProductIds;
 }
+
+   
 
 app.post("/match-products", (req, res) => {
     const { orderString, productsData } = req.body;
