@@ -2,9 +2,9 @@
   "name": "match-products-api",
   "version": "1.0.0",
   "description": "API to match order items with product IDs",
-  "main": "productID.js",
+  "main": "ProductID.js",
   "scripts": {
-    "start": "node productID.js"
+    "start": "node ProductID.js"
   },
   "dependencies": {
     "express": "^4.18.2",
